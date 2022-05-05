@@ -14,14 +14,13 @@ class PLSpider(scrapy.Spider):
 
         #Data Tags
         long_name_tag = "span.long::text"
-        short_name_tag = "span.long::text"
+        short_name_tag = "span.short::text"
         points_tag = "td.points::text"
-
 
         for team in teams:
             yield{
                 'name': team.css(long_name_tag).get(),
-                'abreviation': team.css(short_name_tag).get(),
+                'abbreviation': team.css(short_name_tag).get(),
                 'points': team.css(points_tag).get(),
             }
 

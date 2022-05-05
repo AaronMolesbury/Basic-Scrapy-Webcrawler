@@ -1,0 +1,22 @@
+[
+{"name": "Manchester City", "abbreviation": "MCI", "points": "83"},
+{"name": "Liverpool", "abbreviation": "LIV", "points": "82"},
+{"name": "Chelsea", "abbreviation": "CHE", "points": "66"},
+{"name": "Arsenal", "abbreviation": "ARS", "points": "63"},
+{"name": "Tottenham Hotspur", "abbreviation": "TOT", "points": "61"},
+{"name": "Manchester United", "abbreviation": "MUN", "points": "58"},
+{"name": "West Ham United", "abbreviation": "WHU", "points": "52"},
+{"name": "Wolverhampton Wanderers", "abbreviation": "WOL", "points": "49"},
+{"name": "Brighton and Hove Albion", "abbreviation": "BHA", "points": "44"},
+{"name": "Newcastle United", "abbreviation": "NEW", "points": "43"},
+{"name": "Leicester City", "abbreviation": "LEI", "points": "42"},
+{"name": "Crystal Palace", "abbreviation": "CRY", "points": "41"},
+{"name": "Aston Villa", "abbreviation": "AVL", "points": "40"},
+{"name": "Brentford", "abbreviation": "BRE", "points": "40"},
+{"name": "Southampton", "abbreviation": "SOU", "points": "40"},
+{"name": "Burnley", "abbreviation": "BUR", "points": "34"},
+{"name": "Leeds United", "abbreviation": "LEE", "points": "34"},
+{"name": "Everton", "abbreviation": "EVE", "points": "32"},
+{"name": "Watford", "abbreviation": "WAT", "points": "22"},
+{"name": "Norwich City", "abbreviation": "NOR", "points": "21"}
+]
