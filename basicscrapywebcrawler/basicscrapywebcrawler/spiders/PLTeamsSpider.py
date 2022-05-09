@@ -1,8 +1,8 @@
 import scrapy
 
-class PLSpider(scrapy.Spider):
-    #Spider inits
-    name = "pl"
+class PLTeamsSpider(scrapy.Spider):
+    # Spider inits
+    name = "teams"
     start_urls = ["https://www.premierleague.com/tables?co=1&se=418&ha=-1&team=FIRST"]
 
     def parse(self, response):
@@ -19,9 +19,9 @@ class PLSpider(scrapy.Spider):
 
         for team in teams:
             yield{
-                'name': team.css(long_name_tag).get(),
-                'abbreviation': team.css(short_name_tag).get(),
-                'points': team.css(points_tag).get(),
+                'Name': team.css(long_name_tag).get(),
+                'Abbreviation': team.css(short_name_tag).get(),
+                'Points': team.css(points_tag).get(),
             }
 
 
