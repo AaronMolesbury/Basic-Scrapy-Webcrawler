@@ -7,6 +7,7 @@ import re
 import numpy as np
 from tabulate import tabulate
 
+##### Classes/DAOs #####
 
 # Team DAO
 class Team():
@@ -18,15 +19,8 @@ class Team():
         self.record = []
         self.ppg = []
 
-    # Getters
-    def GetName(self):
-        return self.name
-    
-    def GetAbbr(self):
-        return self.abbr
 
-    def GetPts(self):
-        return self.pts
+##### Global Vars #####
 
 # List of all team objects
 teams = []
@@ -40,6 +34,8 @@ teams = []
 df = []
 
 
+##### JSON Loaders #####
+
 # Populate teams list
 def GetTeamsFromJSON():
     try:
@@ -49,7 +45,7 @@ def GetTeamsFromJSON():
         file.close()
         df.append(pd.DataFrame(data))
         # Debug to view data to test correctness of import
-        ###print(df[0]) 
+        ##print(df[0]) 
 
         # Assign Data to DAOs
         for team in data:
@@ -69,15 +65,16 @@ def GetResultsFromJSON():
         file.close()
         df.append(pd.DataFrame(data))
         # Debug to view data to test correctness of import
-        # print(df[1]) 
-        return df[1]
-
+        ##print(df[1]) 
     except:
         sys.exit("ERROR: JSON file was empty, Perhaps spider(s) were ran incorrectly? Check 'results.json' to see if it is populated")
     
     # Debug to view data to test correctness of import
     # df = pd.DataFrame(data)
     # print(df)
+
+
+##### Helper Functions #####
 
 # Returns team DAO by name
 def FindTeam (team_name):
@@ -90,7 +87,7 @@ def FindTeam (team_name):
 
 # Populates 'record' and 'ppg' lists per team accordingly
 def PopulateTeamResults():
-    results = GetResultsFromJSON()
+    results = df[1]
     for i in range(len(results)):
         # Corresponding Team DAO
         home_team = FindTeam(results.loc[i, "Home"])
@@ -140,6 +137,7 @@ def EvaluatePlacements(index):
     placement.reverse()
     return placement
 
+# Returns list of totals for W/L/D for a team 
 def CalculateWinLossDrawValues(team):
     team_wins = 0
     team_losses = 0
@@ -152,6 +150,9 @@ def CalculateWinLossDrawValues(team):
         if result == "D":
             team_draws += 1
     return [team_wins, team_losses, team_draws]
+
+
+##### Print Functions #####
 
 # Prints league table
 def PrintTable():
@@ -170,9 +171,8 @@ def PrintTeamRecord(team_name):
     team = FindTeam(team_name)
     record = ""
     for i in range(len(team.record)):
-        record += (team.record[i])
-        record += (" ")
-    print("\n")
+        record += team.record[i]
+        record += " "
     wld = CalculateWinLossDrawValues(team)
     data = { 
         "Team Name": team.name,
@@ -183,11 +183,12 @@ def PrintTeamRecord(team_name):
         "Total Points": team.pts,
     }
     team_record_df = pd.DataFrame(data, index = [team.name])
+    print("\n")
     print(team.name + "'s Current Record:")
     print(tabulate(team_record_df, showindex = False, headers = team_record_df.columns, tablefmt="pretty"))   
     PrintExitNotification()
 
-# Prints a specified teams PPG (Cumulative)
+# Prints a specified teams PPG over a season
 def PrintTeamPPG(team_name):
     team = FindTeam(team_name)
     print("\n")
@@ -217,6 +218,7 @@ def PrintTeamPPG(team_name):
     print(tabulate(ppg_df, showindex = False, headers = ppg_df.columns, tablefmt="pretty"))
     PrintExitNotification()
 
+# Prints a League Table after each match of the season
 def PrintTeamPlacements():
     placements = []
     # Calculate the minimum matches played by any team
@@ -234,6 +236,7 @@ def PrintTeamPlacements():
     print(placement_df)
     PrintExitNotification()
 
+# Prints the comparisons of two given teams
 def PrintComparisonResults(first_team_name, second_team_name):
     first_team = FindTeam(first_team_name)
     second_team = FindTeam(second_team_name)
@@ -243,50 +246,52 @@ def PrintComparisonResults(first_team_name, second_team_name):
     second_team_ratio = round(second_team_wld[0]/second_team_wld[1],1)
     first_team_wrate = round((first_team_wld[0]/len(first_team.record)) * 100,1)
     second_team_wrate = round((second_team_wld[0]/len(second_team.record)) * 100,1)
-
+    
+    # List of comparison indicators
     comparisons = []
+    # Compares matches played
     if(len(second_team.record) > len(first_team.record)):
         comparisons.append(" (↑" + str(abs(len(first_team.record) - len(second_team.record))) + ")")
     elif(len(second_team.record) < len(first_team.record)):
         comparisons.append(" (↓" + str(abs(len(second_team.record) - len(first_team.record))) + ")")
     else:
         comparisons.append("(=)")
-    
+    # Compares matches won
     if(second_team_wld[0] > first_team_wld[0]):
         comparisons.append(" (↑" + str(abs(first_team_wld[0] - second_team_wld[0])) + ")")
     elif(second_team_wld[0] < first_team_wld[0]):
         comparisons.append(" (↓" + str(abs(second_team_wld[0] - first_team_wld[0])) + ")")
     else:
         comparisons.append(" (=)")
-
+    # Compares matches lost
     if(second_team_wld[1] > first_team_wld[1]):
         comparisons.append(" (↑" + str(abs(first_team_wld[1] - second_team_wld[1])) + ")")
     elif(second_team_wld[1] < first_team_wld[1]):
         comparisons.append(" (↓" + str(abs(second_team_wld[1] - first_team_wld[1])) + ")")
     else:
         comparisons.append(" (=)")
-
+    # Compares matches drawn
     if(second_team_wld[2] > first_team_wld[2]):
         comparisons.append(" (↑" + str(abs(first_team_wld[2] - second_team_wld[2])) + ")")
     elif(second_team_wld[2] < first_team_wld[2]):
         comparisons.append(" (↓" + str(abs(second_team_wld[2] - first_team_wld[2])) + ")")
     else:
         comparisons.append(" (=)")
-
+    # Compares win rates
     if(second_team_wrate > first_team_wrate):
         comparisons.append(" (↑" + str(round(abs(first_team_wrate - second_team_wrate),1)) + "%)")
     elif(second_team_wrate < first_team_wrate):
         comparisons.append(" (↓" + str(round(abs(second_team_wrate - first_team_wrate),1)) + "%)")
     else:
         comparisons.append(" (=)")   
-
+    # Compares W/L ratio  
     if(second_team_ratio > first_team_ratio):
         comparisons.append(" (↑" + str(abs(first_team_ratio - second_team_ratio)) + ")")
     elif(second_team_ratio < first_team_ratio):
         comparisons.append(" (↓" + str(abs(second_team_ratio - first_team_ratio)) + ")")
     else:
         comparisons.append(" (=)") 
-
+    # Compares total points
     if(second_team.pts > first_team.pts):
         comparisons.append(" (↑" + str(abs(int(first_team.pts) - int(second_team.pts))) + ")")
     elif(second_team.pts < first_team.pts):
@@ -305,23 +310,27 @@ def PrintComparisonResults(first_team_name, second_team_name):
     }
     comparison_df = pd.DataFrame(data, index=[first_team.name, second_team.name]).swapaxes("rows","columns")
     print("\n")
-    print("Stats Table:")
+    print("Comparison Table:")
     print(tabulate(comparison_df, showindex = True, headers = comparison_df.columns, tablefmt="pretty"))
     PrintExitNotification()
 
+# Prints Option Menu + Handles user inputs
 def PrintMainMenu():
     # Options Menu
-    print("Type '1' to view the current Premier League Table.")
-    print("\n")
-    print("Type '2' to view a teams record.")
-    print("\n")
-    print("Type '3' to view a teams PPG over time.")
-    print("\n")
-    print("Type '4' to view the team placements over the course of the season.")
-    print("\n")
-    print("Type '5' to compare two team's stats")
-    print("\n")
+    option_one = "View the current Premier League Table."
+    option_two = "View a teams record."
+    option_three = "View a teams PPG over the course of the season."
+    option_four = "View the team placements over the course of the season."
+    option_five = "Compare two team's statistics."
+    data = {
+        "Option": [1,2,3,4,5],
+        "Action": [option_one, option_two, option_three, option_four, option_five]
+    }
+    menu_df = pd.DataFrame(data)
+    print("Options Menu:")
+    print(tabulate(menu_df, showindex = False, headers = menu_df.columns, tablefmt="pretty"))
     #User input handling
+    print("\n")
     user_input = input("Select option: ")
     print("\n")
     #RegEx check on input
@@ -348,16 +357,17 @@ def PrintMainMenu():
             second_team_name = input("Type the name of the second team you would like to compare: ")
             PrintComparisonResults(first_team_name, second_team_name)
 
+# Prints option to continue to use program or exit
 def PrintExitNotification():
     print("\n")
     print("Would you like to select another option?")
-    user_input = input("(Type Y/N): ")
+    user_input = input("(Type [y/n]): ")
     print("\n")
     #RegEx check on input
-    response_format = re.compile(r'^[YN]$')
+    response_format = re.compile(r'^[yn]$')
     is_valid = re.match(response_format, user_input)
     if(is_valid):
-        if(user_input == "Y"):
+        if(user_input == "y"):
             print("======================================================================================")
             print("\n")
             PrintMainMenu()
@@ -368,9 +378,10 @@ def PrintExitNotification():
         print("That input was invalid, please try again:")
         PrintExitNotification()
 
-#####################################################################################################################
 
-#Main Program
+##### Main Program #####
+
+# Main Program
 def main():
     #Retrieve teams from JSON generated by spider
     print("\n")
@@ -380,6 +391,7 @@ def main():
     #Populate results
     print("Retrieving Results data from PLResultsSpider...")
     print("\n")
+    GetResultsFromJSON()
     PopulateTeamResults()
     print("=================================================================================================")
     print(" Welcome to my simple Premier League data handler! Please choose one of the following options...")
